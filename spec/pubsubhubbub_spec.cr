@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Pubsubhubbub do
+describe PubSubHubbub do
   # TODO: Write tests
 
   it "works" do
