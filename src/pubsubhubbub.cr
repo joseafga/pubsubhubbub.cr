@@ -4,7 +4,7 @@ require "./pubsubhubbub/**"
 #
 # NOTE: http://pubsubhubbub.github.io/PubSubHubbub/pubsubhubbub-core-0.4.html
 module PubSubHubbub
-  VERSION = "0.1.0"
+  VERSION = "0.1.2"
 
   class ChallengeError < Exception
   end
