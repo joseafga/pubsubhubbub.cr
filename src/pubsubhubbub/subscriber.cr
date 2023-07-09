@@ -4,11 +4,7 @@ require "openssl/hmac"
 
 # Subscriber for PubSubHubbub protocol.
 # ```
-# sub = PubSubHubbub::Subscriber.new(
-#   "https://www.youtube.com/xml/feeds/videos.xml?channel_id=SomeChannelId",
-#   "https://example.com"
-# )
-#
+# sub = PubSubHubbub::Subscriber.new "https://www.youtube.com/xml/feeds/videos.xml?channel_id=SomeChannelId"
 # sub.subscribe
 # ```
 module PubSubHubbub
@@ -34,7 +30,7 @@ module PubSubHubbub
 
     # Make a request to unsubscribe/subscribe on the YouTube PubSubHubbub publisher.
     def request(mode : Mode)
-      headers = HTTP::Headers{"User-Agent" => Turquoise::USERAGENT}
+      headers = HTTP::Headers{"User-Agent" => PubSubHubbub.config.useragent}
 
       params = URI::Params.build do |hub|
         hub.add "hub.topic", @topic
@@ -45,7 +41,7 @@ module PubSubHubbub
 
       # PubSubHubbub will request a challenge for callback after post request.
       HTTP::Client.post(PubSubHubbub.config.endpoint, headers: headers, form: params) do |res|
-        Turquoise::Log.debug { "#{res.status_code} #{res.status_message} - #{mode} on #{@topic} -> #{PubSubHubbub.config.callback}" }
+        Log.debug { "#{res.status_code} #{res.status_message} -- #{mode} on #{@topic} -> #{PubSubHubbub.config.callback}" }
       end
     end
 

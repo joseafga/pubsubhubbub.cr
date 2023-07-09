@@ -16,15 +16,53 @@ PubSubHubbub subscriber library written in Crystal.
 
 ## Usage
 
+### Basic
+
 ```crystal
 require "pubsubhubbub"
+
+PubSubHubbub.configure do |settings|
+  settings.host = "https://www.example.com"
+  settings.path = "/pubsubhubbub/some/path"
+end
+
+subscriber = PubSubHubbub::Subscriber.new "https://www.youtube.com/xml/feeds/videos.xml?channel_id=SomeChannelId"
+subscriber.subscribe
 ```
 
-TODO: Write usage instructions here
+### HTTP Server
 
-## Development
+Basic usage allows sending requests to the server but new requests will be sent to the host address (configured in `PubSubHubbub.configure`) and will expect a specific response. To deal with this, we will need an `HTTP::Server`, fortunately `PubSubHubbub.cr` already has a handler created to be used together with `HTTP::Server`, which should provide the necessary functions for the most of use cases.
 
-TODO: Write development instructions here
+```crystal
+require "pubsubhubbub"
+require "http"
+
+class MyClass
+  class_getter subscriber = PubSubHubbub::Subscriber.new("https://www.youtube.com/xml/feeds/videos.xml?channel_id=SomeChannelId")
+
+  # `SubscriberHandler` uses to handle incoming requests from Hub.
+  # This is used to make more dynamic, so that it is possible to find a value from an array or
+  # database.
+  def self.find_subscriber!(topic : String?) : PubSubHubbub::Subscriber
+    subscriber
+  end
+end
+
+# Hook that will execute the block when notification is received
+PubSubHubbub::Subscriber.on :notify do |subscriber, xml|
+  puts "Receiving notification from #{subscriber.topic}: #{xml}"
+end
+
+server = HTTP::Server.new([
+  PubSubHubbub::ErrorHandler.new,
+  PubSubHubbub::SubscriberHandler(MyClass).new,
+])
+
+address = server.bind_tcp 8080
+puts "Listening on http://#{address}"
+server.listen
+```
 
 ## Contributing
 

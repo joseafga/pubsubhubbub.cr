@@ -17,11 +17,13 @@ module PubSubHubbub
     property endpoint : String
     property host : String
     property path : String
+    property useragent : String
 
     def initialize
       @endpoint = "https://pubsubhubbub.appspot.com/subscribe"
       @host = "https://127.0.0.1"
       @path = "/"
+      @useragent = "PubSubHubbub.cr/#{VERSION}"
     end
 
     # Hub callback URL.

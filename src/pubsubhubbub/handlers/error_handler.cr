@@ -14,7 +14,7 @@ module PubSubHubbub
     def respond_error(response, status : HTTP::Status)
       unless response.closed? || response.wrote_headers?
         response.reset
-        response.headers["User-Agent"] = Turquoise::USERAGENT
+        response.headers["User-Agent"] = PubSubHubbub.config.useragent
         response.content_type = "text/plain"
         response.status = status
         response << response.status.code << ' ' << response.status.description << '\n'
@@ -25,12 +25,11 @@ module PubSubHubbub
     def call(context) : Nil
       call_next(context)
     rescue ex : HTTP::Server::ClientError
-      Turquoise::Log.debug(exception: ex.cause) { ex.message }
+      Log.debug(exception: ex.cause) { ex.message }
     rescue ex : ChallengeError
       # If the subscriber does not agree with the action, the subscriber MUST respond with a
       # 404 "Not Found" response.
-
-      Turquoise::Log.error(exception: ex) { ex.message }
+      Log.error(exception: ex) { ex.message }
       respond_error context.response, HTTP::Status::NOT_FOUND
     rescue ex : NotificationError
       # The successful response from the subscriber's callback URL MUST be an HTTP [RFC2616]
@@ -42,10 +41,10 @@ module PubSubHubbub
       # possible; their success response code SHOULD only indicate receipt of the message, not
       # acknowledgment that it was successfully processed by the subscriber.
 
-      Turquoise::Log.error(exception: ex) { ex.message }
+      Log.error(exception: ex) { ex.message }
       respond_error context.response, HTTP::Status::NO_CONTENT
     rescue ex : Exception
-      Turquoise::Log.error(exception: ex) { "Unhandled exception" }
+      Log.error(exception: ex) { "Unhandled exception" }
       respond_error context.response, HTTP::Status::INTERNAL_SERVER_ERROR
     end
   end

@@ -4,7 +4,7 @@
 # require "http"
 #
 # server = HTTP::Server.new([
-#   PubSubHubbub::SubscriberHandler(MySubscriber).new,
+#   PubSubHubbub::SubscriberHandler(MyClass).new,
 # ])
 #
 # address = server.bind_tcp 8080
@@ -28,7 +28,7 @@ module PubSubHubbub
         # unsubscription that it wishes to carry out. If so, the subscriber MUST respond with an
         # HTTP success (2xx) code with a response body equal to the hub.challenge parameter.
         begin
-          Turquoise::Log.debug { "Challenge - #{context.request.query_params["hub.mode"]} on #{context.request.query_params["hub.topic"]}" }
+          Log.debug { "Challenge received -- #{context.request.query_params.to_s}" }
           subscriber = T.find_subscriber!(context.request.query_params["hub.topic"])
           answer = subscriber.challenge_verification(context.request.query_params)
 
@@ -49,7 +49,7 @@ module PubSubHubbub
           if body = context.request.body.try &.gets_to_end
             raise "No content was delivered" if body.nil?
             
-            Turquoise::Log.debug { "Notification - #{body}" }
+            Log.debug { "Notification received -- #{body.to_s}" }
             subscriber = T.find_subscriber!(Feed.parse_topic(body))
             subscriber.check_signature(context.request.headers["X-Hub-Signature"], body)
 
@@ -63,7 +63,7 @@ module PubSubHubbub
         raise "Invalid HTTP method `#{context.request.method}`"
       end
 
-      context.response.headers["User-Agent"] = Turquoise::USERAGENT
+      context.response.headers["User-Agent"] = PubSubHubbub.config.useragent
     end
   end
 end

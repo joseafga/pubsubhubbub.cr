@@ -1,10 +1,12 @@
+require "log"
 require "./pubsubhubbub/**"
 
 # Client and server for PubSubHubbub protocol
 #
 # NOTE: http://pubsubhubbub.github.io/PubSubHubbub/pubsubhubbub-core-0.4.html
 module PubSubHubbub
-  VERSION = "0.1.2"
+  VERSION = "0.1.3"
+  Log = ::Log.for("pubsubhubbub")
 
   class ChallengeError < Exception
   end
