@@ -49,7 +49,7 @@ class MyClass
   end
 end
 
-# Hook that will execute the block when notification is received
+# This hook will execute when it receives a notification.
 PubSubHubbub::Subscriber.on :notify do |subscriber, xml|
   puts "Receiving notification from #{subscriber.topic}: #{xml}"
 end
