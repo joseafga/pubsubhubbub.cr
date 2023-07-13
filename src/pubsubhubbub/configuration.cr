@@ -1,3 +1,5 @@
+require "uri"
+
 module PubSubHubbub
   class_getter config = Configuration.new
 
@@ -5,8 +7,7 @@ module PubSubHubbub
   #
   # ```
   # PubSubHubbub.configure do |config|
-  #   config.host = "https://example.com"
-  #   config.path = "/some/path"
+  #   config.callback = "https://example.com/some/path"
   # end
   # ```
   def self.configure(&block) : Nil
@@ -14,21 +15,12 @@ module PubSubHubbub
   end
 
   class Configuration
-    property endpoint : String
-    property host : String
-    property path : String
-    property useragent : String
+    property endpoint : String = "https://pubsubhubbub.appspot.com/subscribe"
+    property callback : URI = URI.parse("https://127.0.0.1/")
+    property useragent : String = "PubSubHubbub.cr/#{VERSION}"
 
-    def initialize
-      @endpoint = "https://pubsubhubbub.appspot.com/subscribe"
-      @host = "https://127.0.0.1"
-      @path = "/"
-      @useragent = "PubSubHubbub.cr/#{VERSION}"
-    end
-
-    # Hub callback URL.
-    def callback
-      File.join(@host, @path)
+    def callback=(string : String)
+      @callback = URI.parse string
     end
   end
 end

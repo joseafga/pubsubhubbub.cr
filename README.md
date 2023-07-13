@@ -22,8 +22,7 @@ PubSubHubbub subscriber library written in Crystal.
 require "pubsubhubbub"
 
 PubSubHubbub.configure do |settings|
-  settings.host = "https://www.example.com"
-  settings.path = "/pubsubhubbub/some/path"
+  settings.callback = "https://www.example.com/pubsubhubbub/some/path"
 end
 
 subscriber = PubSubHubbub::Subscriber.new "https://www.youtube.com/xml/feeds/videos.xml?channel_id=SomeChannelId"

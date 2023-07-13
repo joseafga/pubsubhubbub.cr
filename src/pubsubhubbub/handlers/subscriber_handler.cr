@@ -16,7 +16,7 @@ module PubSubHubbub
     include HTTP::Handler
 
     def call(context) : Nil
-      unless context.request.path == PubSubHubbub.config.path
+      unless context.request.path == PubSubHubbub.config.callback.path
         call_next(context)
         return
       end

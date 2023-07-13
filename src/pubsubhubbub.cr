@@ -5,8 +5,15 @@ require "./pubsubhubbub/**"
 #
 # NOTE: http://pubsubhubbub.github.io/PubSubHubbub/pubsubhubbub-core-0.4.html
 module PubSubHubbub
-  VERSION = "0.1.3"
-  Log = ::Log.for("pubsubhubbub")
+  VERSION = "0.1.4"
+  Log     = ::Log.for("pubsubhubbub")
+
+  enum Event
+    Subscribe
+    Unsubscribe
+    Challenge
+    Notify
+  end
 
   class ChallengeError < Exception
   end

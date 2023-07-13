@@ -8,19 +8,7 @@ require "openssl/hmac"
 # sub.subscribe
 # ```
 module PubSubHubbub
-  enum Event
-    Subscribe
-    Unsubscribe
-    Challenge
-    Notify
-  end
-
   class Subscriber
-    enum Mode
-      Subscribe
-      Unsubscribe
-    end
-
     property topic : String
     property secret : String?
     class_getter hooks = {} of Event => Array(Proc(Subscriber, String, Nil))
@@ -29,30 +17,32 @@ module PubSubHubbub
     end
 
     # Make a request to unsubscribe/subscribe on the YouTube PubSubHubbub publisher.
-    def request(mode : Mode)
+    private def request(mode : String)
       headers = HTTP::Headers{"User-Agent" => PubSubHubbub.config.useragent}
-
       params = URI::Params.build do |hub|
         hub.add "hub.topic", @topic
-        hub.add "hub.callback", PubSubHubbub.config.callback
-        hub.add "hub.mode", mode.to_s.downcase
+        hub.add "hub.callback", PubSubHubbub.config.callback.to_s
+        hub.add "hub.mode", mode
         hub.add "hub.secret", @secret unless @secret.nil?
       end
 
       # PubSubHubbub will request a challenge for callback after post request.
-      HTTP::Client.post(PubSubHubbub.config.endpoint, headers: headers, form: params) do |res|
-        Log.debug { "#{res.status_code} #{res.status_message} -- #{mode} on #{@topic} -> #{PubSubHubbub.config.callback}" }
-      end
+      response = HTTP::Client.post(PubSubHubbub.config.endpoint, headers: headers, form: params)
+
+      Log.debug { "#{response.status_code} #{response.status_message} -- #{params["hub.mode"]?} on #{@topic} -> #{PubSubHubbub.config.callback.to_s}" }
+      raise "Request fail." unless response.success?
+    rescue ex
+      Log.error(exception: ex) { ex.message }
     end
 
     def subscribe
       emit Event::Subscribe
-      request Mode::Subscribe
+      request "subscribe"
     end
 
     def unsubscribe
-      emit Event::Subscribe
-      request Mode::Unsubscribe
+      emit Event::Unsubscribe
+      request "unsubscribe"
     end
 
     # Recompute the SHA1 signature with the shared secret using the same method as the hub.
