@@ -29,7 +29,7 @@ module PubSubHubbub
       # PubSubHubbub will request a challenge for callback after post request.
       response = HTTP::Client.post(PubSubHubbub.config.endpoint, headers: headers, form: params)
 
-      Log.debug { "#{response.status_code} #{response.status_message} -- #{params["hub.mode"]?} on #{@topic} -> #{PubSubHubbub.config.callback.to_s}" }
+      Log.debug { "#{response.status_code} #{response.status_message} -- #{mode} on #{@topic} -> #{PubSubHubbub.config.callback.to_s}" }
       raise "Request fail." unless response.success?
     rescue ex
       Log.error(exception: ex) { ex.message }
