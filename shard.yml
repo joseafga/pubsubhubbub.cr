@@ -1,9 +1,9 @@
 name: pubsubhubbub
-version: 0.1.5
+version: 0.1.6
 
 authors:
   - José Almeida <jose.afga@gmail.com>
 
-crystal: 1.8.2
+crystal: 1.9.2
 
 license: MIT

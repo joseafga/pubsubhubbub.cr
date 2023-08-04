@@ -5,7 +5,7 @@ require "./pubsubhubbub/**"
 #
 # NOTE: http://pubsubhubbub.github.io/PubSubHubbub/pubsubhubbub-core-0.4.html
 module PubSubHubbub
-  VERSION = "0.1.5"
+  VERSION = "0.1.6"
   Log     = ::Log.for("pubsubhubbub")
 
   class ChallengeError < Exception
