@@ -1,3 +1,5 @@
+require "http"
+
 # Handle requests from the hub.
 #
 # ```
@@ -28,7 +30,7 @@ module PubSubHubbub
         # unsubscription that it wishes to carry out. If so, the subscriber MUST respond with an
         # HTTP success (2xx) code with a response body equal to the hub.challenge parameter.
         begin
-          Log.debug { "Challenge received -- #{context.request.query_params.to_s}" }
+          Log.debug { "Challenge received -- #{context.request.query_params}" }
           subscriber = T.find_subscriber!(context.request.query_params["hub.topic"])
           answer = subscriber.challenge_verification(context.request.query_params)
 
@@ -48,8 +50,8 @@ module PubSubHubbub
         begin
           if body = context.request.body.try &.gets_to_end
             raise "No content was delivered" if body.nil?
-            
-            Log.debug { "Notification received -- #{body.to_s}" }
+
+            Log.debug { "Notification received -- #{body}" }
             subscriber = T.find_subscriber!(Feed.parse_topic(body))
             subscriber.check_signature(context.request.headers["X-Hub-Signature"], body)
 

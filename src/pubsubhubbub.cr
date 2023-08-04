@@ -8,13 +8,6 @@ module PubSubHubbub
   VERSION = "0.1.5"
   Log     = ::Log.for("pubsubhubbub")
 
-  enum Event
-    Subscribe
-    Unsubscribe
-    Challenge
-    Notify
-  end
-
   class ChallengeError < Exception
   end
 
